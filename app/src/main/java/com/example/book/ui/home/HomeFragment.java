@@ -1,6 +1,7 @@
 package com.example.book.ui.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.book.BookActivity;
 import com.example.book.MainActivity;
 import com.example.book.R;
 import com.example.book.databinding.FragmentHomeBinding;
@@ -32,7 +34,7 @@ public class HomeFragment extends Fragment {
     MainActivity activity;
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
-    private RecyclerView listview;
+
 
     RecyclerView recyclerView;
     BookAdapter adapter;
@@ -40,10 +42,20 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
         initBookAdapter();
-        //init();
         return rootView;
     }
-   public void initBookAdapter(){
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 101){
+            String name = data.getStringExtra("name");
+            Toast.makeText(activity,"메뉴화면으로부터 응답: "+ name,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void initBookAdapter(){
         recyclerView = (RecyclerView) rootView.findViewById(R.id.main_listview);
        LinearLayoutManager layoutManager = new LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false);
        recyclerView.setLayoutManager(layoutManager);
@@ -60,8 +72,13 @@ public class HomeFragment extends Fragment {
             public void onItemClick(BookAdapter.ViewHolder holder, View view, int position) {
                 BookItem item = adapter.getItem(position);
                 Toast.makeText(activity,"select item: "+item.getBookName(),Toast.LENGTH_LONG).show();
+                //시스템 요청
+                Intent intent = new Intent(activity, BookActivity.class);
+                intent.putExtra("name",item.getBookName());
+                startActivityForResult(intent,101);
             }
         });
+
     }
     @Override
     public void onAttach(@NonNull Context context) {
@@ -76,33 +93,6 @@ public class HomeFragment extends Fragment {
         super.onDetach();
         activity = null;
     }
-    private void init() {
-
-        listview = (RecyclerView) rootView.findViewById(R.id.main_listview);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(  activity, LinearLayoutManager.HORIZONTAL, false); //가로 방향 설정
-        listview.setLayoutManager(layoutManager);
-
-        ArrayList<String> itemList = new ArrayList<>();
-        itemList.add("0");
-        itemList.add("1");
-        itemList.add("2");
-        itemList.add("3");
-        itemList.add("4");
-        itemList.add("5");
-        itemList.add("6");
-        itemList.add("7");
-        itemList.add("8");
-        itemList.add("9");
-        itemList.add("10");
-        itemList.add("11");
-
-//        adapter = new MyAdapter(activity, itemList, onClickItem);
-        listview.setAdapter(adapter);
-
-        MyListDecoration decoration = new MyListDecoration();
-        listview.addItemDecoration(decoration);
-    }
-
 
     private View.OnClickListener onClickItem = new View.OnClickListener() {
         @Override
