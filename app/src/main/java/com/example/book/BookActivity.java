@@ -10,6 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.book.data.BookData;
+
+import java.util.ArrayList;
+
 public class BookActivity extends AppCompatActivity {
 Button button;
     @Override
@@ -28,15 +32,21 @@ Button button;
                 finish();
             }
         });
+        //home에서 받아오는 데이터
+        Intent passedIntent = getIntent();
+        processIntent(passedIntent);
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == 101){
-            String name = data.getStringExtra("name");
-            Toast.makeText(getApplicationContext(),"메뉴화면으로부터 응답: "+ name,Toast.LENGTH_LONG).show();
+    private void processIntent(Intent intent){
+        if(intent != null){
+            ArrayList<String> names = (ArrayList<String>)intent.getSerializableExtra("names");
+            if(names != null){
+                Toast.makeText(getApplicationContext(),"전달받은 리스트 갯수: "+ names.size(),Toast.LENGTH_SHORT).show();
+            }
+           BookData data = (BookData) intent.getParcelableExtra("data");
+            if(data != null){
+                Toast.makeText(getApplicationContext(),"전달받은 data: "+ data.message,Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
 }
